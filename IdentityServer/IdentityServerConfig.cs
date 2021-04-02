@@ -58,6 +58,23 @@ namespace IdentityServer
                     ClientSecrets = {new Secret("SuperSecretPassword".Sha256())},
                         
                     AllowedScopes = {"weatherapi.read", "weatherapi.write"}
+                },
+                new Client
+                {
+                    ClientId = "interactive",
+                    ClientSecrets = {new Secret("SuperSecretPassword".Sha256())},
+                    
+                    AllowedGrantTypes = GrantTypes.Code,
+                    
+                    RedirectUris = {"https://localhost:5445/signin-oidc"},
+                    FrontChannelLogoutUri = "https://localhost:5444/signout-oidc",
+                    PostLogoutRedirectUris = {"https://localhost:5445/signout-callback-oidc"},
+                    
+                    AllowOfflineAccess = true,
+                    AllowedScopes = {"openid", "profile", "weatherapi.read"},
+                    RequirePkce = true,
+                    RequireConsent = true,
+                    AllowPlainTextPkce = false
                 }
             };
         
