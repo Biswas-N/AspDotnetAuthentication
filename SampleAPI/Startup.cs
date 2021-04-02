@@ -26,7 +26,12 @@ namespace SampleAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddAuthentication("Bearer")
+                .AddIdentityServerAuthentication("Bearer", options =>
+                {
+                    options.ApiName = "weatherapi";
+                    options.Authority = "https://localhost:5443";
+                });
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -48,6 +53,7 @@ namespace SampleAPI
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
