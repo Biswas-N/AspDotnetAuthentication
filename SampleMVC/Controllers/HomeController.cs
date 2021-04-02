@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using IdentityModel.Client;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -34,7 +35,8 @@ namespace SampleMVC.Controllers
         {
             return View();
         }
-
+        
+        [Authorize]
         public async Task<IActionResult> Weather()
         {
             using var client = new HttpClient();

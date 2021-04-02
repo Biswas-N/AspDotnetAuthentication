@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using IdentityModel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -25,6 +26,28 @@ namespace SampleMVC
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            
+            // Configuration for adding Cookie and Oidc Authentication
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = "cookie";
+                    options.DefaultChallengeScheme = "oidc";
+                })
+                .AddCookie("cookie")
+                .AddOpenIdConnect("oidc", options =>
+                {
+                    options.Authority = Configuration["InteractiveServiceSettings:AuthorityUrl"];
+                    options.ClientId = Configuration["InteractiveServiceSettings:ClientId"];
+                    options.ClientSecret = Configuration["InteractiveServiceSettings:ClientSecret"];
+
+                    options.ResponseType = OidcConstants.ResponseTypes.Code;
+                    options.UsePkce = true;
+                    options.ResponseMode = OidcConstants.ResponseModes.Query;
+                    
+                    options.Scope.Add(Configuration["InteractiveServiceSettings:Scopes:0"]);
+                    options.SaveTokens = true;
+                });
+            
             services.Configure<IdentityServerSettings>(Configuration.GetSection("IdentityServerSettings"));
             services.AddSingleton<ITokenService, TokenService>();
         }
@@ -48,6 +71,7 @@ namespace SampleMVC
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
